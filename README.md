@@ -1,2 +1,2 @@
 # CrepeMC
- Contains Docker files for CrepeMC and supporting images
+ Docker container for PaperMC, with dreams of being the thinnest, fastest image around!
