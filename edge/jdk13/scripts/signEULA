@@ -1,0 +1,15 @@
+#!/bin/sh
+if [[ $# -ne 1 ]]; then
+	echo "Needs only one argument: the path to paper.jar, as a single string, omitting final slash" 1>&2
+	exit 2
+fi
+PAPERPATH=$1
+cd $PAPERPATH
+if [ ! -e eula.txt ]; then
+	if [ ! -e paper.jar ]; then
+		echo "Wrong directory? paper.jar not found at $PAPERPATH/paper.jar" 1>&2
+		exit 1
+	fi
+	java -jar paper.jar
+fi
+sed -i 's:false:${EULA_OK}:g' eula.txt
