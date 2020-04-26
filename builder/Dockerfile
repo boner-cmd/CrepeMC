@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk update && apk add --no-cache bash curl
+RUN apk update && apk add --no-cache curl
 
 COPY builder .
 COPY template .
