@@ -6,7 +6,7 @@ ARG JLINK_JDK_VERSION=14
 # Alpine base
 FROM alpine:latest AS getpaper
 
-ENV PAPER_URL="PAPER_URL_"
+ENV PAPER_FULL_URL="PAPER_FULL_URL_"
 ENV PAPER_FILENAME="PAPER_FILENAME_"
 ENV PAPER_VERSION="PAPER_VERSION_"
 ENV PAPER_SUM="PAPER_SUM_"
@@ -15,7 +15,7 @@ WORKDIR /tmp
 
 RUN apk update \
   && apk add --no-cache curl \
-  && curl -Lf "${PAPER_URL}" -O \
+  && curl -Lf "${PAPER_FULL_URL}" -O \
   && echo "${PAPER_SUM}  ${PAPER_FILENAME}" | sha256sum -c - \
   && apk del --purge curl
 
