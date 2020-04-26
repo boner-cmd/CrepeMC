@@ -1,15 +1,17 @@
-#!/bin/sh'
-if [[ $# -ne 1 ]]; then
-	echo "Needs only one argument: the path to paper.jar, as a single string, omitting final slash" 1>&2
+#!/bin/sh
+if [ $# -ne 2 ]; then
+	echo "Wrong number of arguments to signEULA" 1>&2
+  echo "Needs path to paper.jar, omitting final slash, and EULA signing value" 1>&2
 	exit 2
 fi
-PATH=$1
-cd $PATH
+path_to_jar=$1
+eula_sign=$2
+cd $path_to_jar || exit 1
 if [ ! -e eula.txt ]; then
 	if [ ! -e paper.jar ]; then
-		echo "Wrong directory? paper.jar not found at $PATH/paper.jar" 1>&2
+		echo "Wrong directory? paper.jar not found at $path_to_jar/paper.jar" 1>&2
 		exit 1
 	fi
 	java -jar paper.jar
 fi
-sed -i \'s:false:${EULA_OK}:g\' eula.txt
+sed -i "s:false:$eula_sign:g" eula.txt
