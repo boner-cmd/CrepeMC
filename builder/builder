@@ -1,0 +1,57 @@
+#!/bin/sh
+# make sure bash isn't needed during testing
+
+if [ ! -e template ]; then
+	echo "No template found in current directory." 1>&2 && exit 1
+fi	
+mkdir /working
+mv template /working/template
+readonly GCCLIBSURL="https://archive.archlinux.org/packages/g/gcc-libs"
+readonly GLIBCURL="https://github.com/sgerrand/alpine-pkg-glibc/releases"
+readonly ZLIBURL="https://archive.archlinux.org/packages/z/zlib"
+readonly SGKEYURL="https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub"
+readonly SGKEY="$(curl -LfsS ${SGKEYURL})"
+readonly GCCFILE="$(curl -LfsS ${GCCLIBSURL} \
+	| sed 's:<a href="::g;s:</a>::g;/^<h\|^<b\|<\/\|sig/d;s:.*>::;s:zst.*:zst:' \
+	| sort -o \
+	| tail -n 1)"
+readonly ZLIBFILE="$(curl -LfsS ${ZLIBURL} \
+	| sed 's:<a href="::g;s:</a>::g;/^<h\|^<b\|<\/\|sig/d;s:.*>::;s:xz.*:xz:' \
+	| sort -o \
+	| tail -n 1)"
+readonly GCCFULLURL="${GCCLIBSURL}/${GCCFILE}"
+readonly GCCLIBSVER="$(sed 's:.pkg.*::' < ${GCCFILE})"
+readonly ZLIBFULLURL="${ZLIBURL}/${ZLIBFILE}"
+readonly ZLIBVER="$(sed 's:.pkg.*::' < ${ZLIBFILE})"
+cd /working
+curl -LfsS ${GCCFULLURL} ${ZLIBFULLURL} -O -O
+readonly GLIBCVER="$(curl -sS ${GLIBCURL}/latest \
+	| sed -i 's:.*tag/::;s:".*::')"
+readonly GLIBCFULLURL="${GLIBCURL}/download/${GLIBCVER}/glibc-${GLIBCVER}.apk"
+readonly GLIBCBINURL="${GLIBCURL}/download/${GLIBCVER}/glibc-bin-${GLIBCVER}.apk"
+readonly GLIBCI18NURL="${GLIBCURL}/download/${GLIBCVER}/glibc-i18n-${GLIBCVER}.apk"
+readonly GLIBCFILE="glibc-$GLIBCVER.apk"
+readonly GLIBCBINFILE="glibc-bin-$GLIBCVER.apk"
+readonly GLIBCI18NFILE="glibc-i18n-$GLIBCVER.apk"
+curl -LfsS ${GLIBCFULLURL} ${GLIBCBINURL} ${GLIBCI18NURL} -O -O -O
+sha256sum * >> sums
+readonly GCCTAR="$(sed 's,...$,,')"
+sed -i "s,GCCFULLURL,$GCCFULLURL,; \
+		s,GLIBCFULLURL,$GLIBCFULLURL,; \
+		s,GLIBCBINURL,$GLIBCBINURL,; \
+		s,GLIBCI18NURL,$GLIBCI18NURL,; \
+		s,ZLIBFULLURL,$ZLIBFULLURL,; \
+		s,GCCFILE,$GCCFILE,; \
+		s,GCCSUM,$GCCSUM,; \
+		s,GCCTAR,$GCCTAR,; \
+		s,GLIBCFILE,$GLIBCFILE,; \
+		s,GLIBCSUM,$GLIBCSUM,; \
+		s,GLIBCBINFILE,$GLIBCBINFILE,; \
+		s,GLIBCBINSUM,$GLIBCBINSUM,; \
+		s,GLIBCI18NFILE,$GLIBCI18NFILE,; \
+		s,GLIBCI18NSUM,$GLIBCI18NSUM,; \
+		s,SGKEYURL,$SGKEYURL,; \
+		s,SGKEY,$SGKEY,; \
+		s,ZLIBFILE,$ZLIBFILE,; \
+		s,ZLIBSUM,$ZLIBSUM,; \
+		s,GLIBCVER,$GLIBCVER,g" template

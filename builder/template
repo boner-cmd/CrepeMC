@@ -1,0 +1,131 @@
+# TODO what happens when a minecraft version is replaced but the world is not?
+# TODO ensure rayon feature is still included in b3sum even though it cannot be added as a feature now that it is required
+# TODO current PR in b3sum to add check feature, which will make check script unnecessary, needs monitoring
+# TODO make sure generator produces GCC tar and replaces it
+
+# Alpine base
+FROM alpine AS prepack
+
+# download binutils package and dependencies once so it won't need to be downloaded twice later
+# also download zstd since apk update occurs here
+
+RUN mkdir /tmp/binutilscpy
+
+WORKDIR /tmp/binutilscpy
+
+RUN apk update \
+	&& apk upgrade \
+	&& apk fetch binutils \
+				libgcc \
+				libstdc++ \
+	&& apk add /tmp/binutilscpy/* \
+				zstd \
+				curl \
+	&& curl -LfsS SGKEYURL -o /etc/apk/keys/sgerrand.rsa.pub \
+    && SGERRAND_RSA_SHA256="SGKEY" \
+    && echo "${SGERRAND_RSA_SHA256} */etc/apk/keys/sgerrand.rsa.pub" | sha256sum -c - \
+	&& apk del --purge curl
+
+# AdoptOpenJDK image on an Alpine base
+FROM adoptopenjdk/openjdk13:alpine AS jlink
+
+COPY --from=prepack /tmp/binutilscpy /tmp/binutilscpy
+
+RUN apk add /tmp/binutilscpy/*
+
+RUN ["/opt/java/openjdk/bin/jlink", "--compress=2", "--bind-services", "--strip-debug", \
+	"--module-path", "/opt/java/openjdk/jmods", "--add-modules", \
+	"java.base,java.desktop,java.instrument,java.scripting,java.sql,java.instrument,java.compiler,java.logging,java.management,java.naming,java.rmi,java.xml,jdk.sctp,jdk.unsupported", \
+	 "--output", "/jlinked"]
+
+# Rust image on an Alpine base
+FROM rust:alpine as verify
+
+COPY /scripts/chkb3 /tmp/downloads/chkb3
+
+# get files, create comparison script, calculate and check BLAKE3 sums
+
+WORKDIR /tmp/downloads
+
+RUN apk add --no-cache curl \
+	&& curl -LfsS GCCFULLURL -O \
+	&& curl -LfsS GLIBCFULLURL GLIBCBINURL GLIBCI18NURL -O -O -O \
+	&& curl -LfsS PAPERFULLURL -o PAPERFILE \
+	&& curl -LfsS ZLIBFULLURL -O \
+	&& apk del --purge curl
+
+RUN cargo install b3sum --no-default-features \
+	&& ./chkb3 $(b3sum GCCFILE) GCCSUM \
+	&& ./chkb3 $(b3sum GLIBCFILE) GLIBCSUM \
+	&& ./chkb3 $(b3sum GLIBCBINFILE) GLIBCBINSUM \
+	&& ./chkb3 $(b3sum GLIBCI18NFILE) GLIBCI18NSUM \
+	&& ./chkb3 $(b3sum PAPERFILE) PAPERSUM \
+	&& ./chkb3 $(b3sum ZLIBFILE) ZLIBSUM \
+	&& cargo uninstall b3sum
+	
+FROM prepack AS mcprep
+
+COPY --from=jlink /jlinked /opt/java/openjdk
+COPY --from=verify /tmp/downloads /tmp/depends
+COPY /scripts/signEULA /tmp/depends/signEULA
+
+ENV PATH="/opt/java/openjdk/bin:${PATH}"
+ARG EULA_OK
+ENV EULA_OK ${EULA_OK:-false}
+
+EXPOSE 25565/tcp
+EXPOSE 25565/udp
+
+WORKDIR /tmp/depends
+
+RUN apk add --no-cache glibc-GLIBCVER.apk \
+					glibc-bin-GLIBCVER.apk \
+					glibc-i18n-GLIBCVER.apk \
+    && /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 "$LANG" || true \
+    && echo "export LANG=$LANG" > /etc/profile.d/locale.sh \
+    && mkdir /tmp/gcc \
+	&& unzstd GCCFILE -o GCCTAR \
+	&& tar -xf GCCTAR -C /tmp/gcc \
+    && mv /tmp/gcc/usr/lib/libgcc* /tmp/gcc/usr/lib/libstdc++* /usr/glibc-compat/lib \
+    && strip /usr/glibc-compat/lib/libgcc_s.so.* /usr/glibc-compat/lib/libstdc++.so* \
+	&& mkdir /tmp/libz \
+    && tar -xf ZLIBFILE -C /tmp/libz \
+    && mv /tmp/libz/usr/lib/libz.so* /usr/glibc-compat/lib \
+	&& apk del --purge binutils \
+						glibc-i18n \
+						zstd \
+    && rm -r *.apk \
+			/tmp/gcc \
+			/tmp/depends/GCCTAR \
+			/tmp/depends/GCCFILE \
+			/tmp/libz \
+			/tmp/depends/ZLIBFILE \
+			/tmp/binutilscpy \
+			/var/cache/apk/*
+	&& mkdir /papermc \
+	&& mv /tmp/depends/PAPERFILE /papermc/paper.jar
+
+RUN	addgroup minecraft \
+	&& adduser -Ss /bin/false -D minecraft minecraft \
+	&& mv /tmp/depends/signEULA /home/minecraft/signEULA \
+	&& chown minecraft /home/minecraft/signEULA \
+	&& chown -R minecraft /papermc \
+	&& chmod 754 /home/minecraft/signEULA
+
+USER minecraft
+
+USER minecraft
+
+RUN export EULA_OK="$(echo $EULA_OK | tr '[:upper:]' '[:lower:]')" \
+	&& ~/signEULA '/papermc'
+
+VOLUME /papermc
+
+ENTRYPOINT [ "java", "-server", \
+				"-XX:+UnlockExperimentalVMOptions", \
+				"-XX:+UseZGC", \
+				"-XX:+DisableExplicitGC", \
+				"-XX:+AlwaysPreTouch", \
+				"-XX:+ParallelRefProcEnabled", \
+			"-jar", "/papermc/paper.jar", "nogui" ]
+CMD [ "-Xms1G","-Xmx1G" ]
