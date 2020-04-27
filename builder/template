@@ -41,7 +41,7 @@ WORKDIR /home/paper
 
 RUN export EULA_OK="$(echo ${EULA_OK} | tr '[:upper:]' '[:lower:]')" \
 	&& chmod 754 ./signEULA \
-  && ./signEULA './papermc' "${EULA_OK}"
+  && ./signEULA "./papermc/${PAPER_FILENAME}" "${EULA_OK}"
 
 VOLUME /home/paper/papermc
 
