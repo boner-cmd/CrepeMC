@@ -37,9 +37,11 @@ USER paper
 COPY --chown=paper:minecraft --from=getpaper /tmp /home/paper/papermc
 COPY --chown=paper:minecraft ./scripts/signEULA /home/paper/signEULA
 
+WORKDIR /home/paper
+
 RUN export EULA_OK="$(echo ${EULA_OK} | tr '[:upper:]' '[:lower:]')" \
 	&& chmod 754 ./signEULA \
-  && ~/signEULA './papermc' "${EULA_OK}"
+  && ./signEULA './papermc' "${EULA_OK}"
 
 VOLUME /home/paper/papermc
 
