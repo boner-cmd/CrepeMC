@@ -34,8 +34,8 @@ RUN	addgroup minecraft && adduser -Ss /bin/false -D paper minecraft
 
 USER paper
 
-COPY --chown=paper --from=getpaper /tmp /home/paper/papermc
-COPY --chown=paper ./scripts/signEULA /home/paper/signEULA
+COPY --chown=paper:minecraft --from=getpaper /tmp /home/paper/papermc
+COPY --chown=paper:minecraft ./scripts/signEULA /home/paper/signEULA
 
 RUN export EULA_OK="$(echo ${EULA_OK} | tr '[:upper:]' '[:lower:]')" \
 	&& chmod 754 ./signEULA \
