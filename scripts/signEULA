@@ -1,15 +1,16 @@
 #!/bin/sh
-if [ $# -ne 2 ]; then
+if [ $# -ne 3 ]; then
 	echo "Wrong number of arguments to signEULA" 1>&2
-  echo "Needs path to paper jar (with filename) and EULA signing value" 1>&2
+  echo "Needs path to paper jar, filename, and EULA signing value" 1>&2
 	exit 2
 fi
 path_to_jar=$1
-eula_sign=$2
-cd "$path_to_jar" || exit 1
+jar_name=$2
+eula_sign=$3
+cd "${path_to_jar}" || exit 1
 if [ ! -e eula.txt ]; then
-	if [ ! -e "$path_to_jar" ]; then
-		echo "Wrong directory? $path_to_jar not found" 1>&2
+	if [ ! -e "${jar_name}" ]; then
+		echo "Wrong directory? ${path_to_jar}/${jar_name} not found" 1>&2
 		exit 1
 	fi
 	java -jar paper.jar
