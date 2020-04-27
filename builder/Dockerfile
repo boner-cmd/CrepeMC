@@ -7,4 +7,4 @@ COPY template .
 
 # RUN bash builder
 
-CMD ["bash", "./builder"]
+CMD ["./builder"]
