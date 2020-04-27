@@ -8,13 +8,13 @@ fi
 readonly PAPER_BASE_URL="https://papermc.io/api/v1/paper"
 
 MC_VERSION="$(curl -LfsS "${PAPER_BASE_URL}")" \
-  && MC_VERSION="${MC_VERSION#*0:\"}" \
+  && MC_VERSION="${MC_VERSION#*[\"}" \
   && MC_VERSION="${MC_VERSION%%\"*}" \
   && readonly MC_VERSION \
   || exit 1
 
 PAPER_VERSION="$(curl -LfsS "${PAPER_BASE_URL}/${MC_VERSION}")" \
-  && PAPER_VERSION="${PAPER_VERSION#*latest:\"}" \
+  && PAPER_VERSION="${PAPER_VERSION#*latest\":\"}" \
   && PAPER_VERSION="${PAPER_VERSION%%\"*}" \
   && readonly PAPER_VERSION \
   || exit 1
