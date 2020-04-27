@@ -7,13 +7,13 @@ fi
 
 readonly PAPER_BASE_URL="https://papermc.io/api/v1/paper"
 
-MC_VERSION="$(curl -LfsS "${PAPER_BASE_URL}")" \
+MC_VERSION="$(curl -LfsS ${PAPER_BASE_URL})" \
   && MC_VERSION="${MC_VERSION#*0:\"}" \
   && MC_VERSION="${MC_VERSION%%\"*}" \
   && readonly MC_VERSION \
   || exit 1
 
-PAPER_VERSION="$(curl -LfsS "${PAPER_BASE_URL}/${MC_VERSION}")" \
+PAPER_VERSION="$(curl -LfsS ${PAPER_BASE_URL}/${MC_VERSION})" \
   && PAPER_VERSION="${PAPER_VERSION#*latest:\"}" \
   && PAPER_VERSION="${PAPER_VERSION%%\"*}" \
   && readonly PAPER_VERSION \
@@ -32,7 +32,7 @@ cd working || exit 1
 curl -Lf "${PAPER_FULL_URL}" -o "${PAPER_FILENAME}" \
   || exit 1
 
-readonly PAPER_SUM="$(sha256sum "${PAPER_FILENAME}" | head -c 64)"
+readonly PAPER_SUM="$(sha256sum ${PAPER_FILENAME} | head -c 64)"
 
 sed -i "s,PAPER_FULL_URL_${PAPER_FULL_URL},; \
   s,PAPER_FILENAME_,${PAPER_FILENAME},; \
