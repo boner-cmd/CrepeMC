@@ -26,6 +26,7 @@ ARG EULA_OK
 ARG RAM_ALLOC
 ENV EULA_OK ${EULA_OK:-false}
 ENV RAM_ALLOC ${RAM_ALLOC:-1}
+ENV PAPER_FILENAME="PAPER_FILENAME_"
 
 EXPOSE 25565/tcp
 EXPOSE 25565/udp
@@ -41,7 +42,7 @@ WORKDIR /home/paper
 
 RUN export EULA_OK="$(echo ${EULA_OK} | tr '[:upper:]' '[:lower:]')" \
 	&& chmod 754 ./signEULA \
-  && ./signEULA "./papermc" "${PAPER_FILENAME}" "${EULA_OK}"
+  && ./signEULA "./papermc" "${EULA_OK}"
 
 VOLUME /home/paper/papermc
 
