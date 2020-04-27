@@ -1,5 +1,5 @@
 # please don't modify this file directly; it was generated using scripts
-# this specific Dockerfile was generated Mon, 27 Apr 2020 00:27:57 +0000
+# this specific Dockerfile was generated Mon, 27 Apr 2020 01:18:38 +0000
 
 # Determine which jlinked version of OpenJDK to use later
 ARG JLINK_JDK_VERSION=14
@@ -15,7 +15,7 @@ WORKDIR /tmp
 
 RUN apk update \
   && apk add --no-cache curl \
-  && curl -Lf "${PAPER_FULL_URL}" -O \
+  && curl -Lf "${PAPER_FULL_URL}" -o "${PAPER_FILENAME}" \
   && echo "${PAPER_SUM}  ${PAPER_FILENAME}" | sha256sum -c - \
   && apk del --purge curl
 
@@ -26,6 +26,7 @@ ARG EULA_OK
 ARG RAM_ALLOC
 ENV EULA_OK ${EULA_OK:-false}
 ENV RAM_ALLOC ${RAM_ALLOC:-1}
+ENV PAPER_FILENAME="paper-220.jar"
 
 EXPOSE 25565/tcp
 EXPOSE 25565/udp
@@ -34,12 +35,14 @@ RUN	addgroup minecraft && adduser -Ss /bin/false -D paper minecraft
 
 USER paper
 
-COPY --chown=paper --from=getpaper /tmp /home/paper/papermc
-COPY --chown=paper ./scripts/signEULA /home/paper/signEULA
+COPY --chown=paper:minecraft --from=getpaper /tmp /home/paper/papermc
+COPY --chown=paper:minecraft ./scripts/signEULA /home/paper/signEULA
+
+WORKDIR /home/paper
 
 RUN export EULA_OK="$(echo ${EULA_OK} | tr '[:upper:]' '[:lower:]')" \
 	&& chmod 754 ./signEULA \
-  && ~/signEULA './papermc' "${EULA_OK}"
+  && ./signEULA "./papermc" "${EULA_OK}"
 
 VOLUME /home/paper/papermc
 
