@@ -1,7 +1,8 @@
 # please don't modify this file directly; it was generated using scripts
-# this specific Dockerfile was generated Sun, 10 May 2020 07:28:29 +0000
+# this specific Dockerfile was generated Sun, 10 May 2020 07:55:43 +0000
 
 # Determine which jlinked version of OpenJDK to use later
+# this default value is overwritten by the build batch script
 ARG JLINK_JDK_VERSION=14
 # Alpine base
 FROM alpine:latest AS getpaper
@@ -23,9 +24,7 @@ RUN apk update \
 FROM ethco/jlinkmc:jdk${JLINK_JDK_VERSION}
 
 ARG EULA_OK
-ARG RAM_ALLOC
 ENV EULA_OK ${EULA_OK:-false}
-ENV RAM_ALLOC ${RAM_ALLOC:-1}
 ENV PAPER_FILENAME="paper-272.jar"
 
 EXPOSE 25565/tcp
