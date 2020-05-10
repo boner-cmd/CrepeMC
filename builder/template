@@ -2,6 +2,7 @@
 # this specific Dockerfile was generated DATE_
 
 # Determine which jlinked version of OpenJDK to use later
+# this default value is overwritten by the build batch script
 ARG JLINK_JDK_VERSION=14
 # Alpine base
 FROM alpine:latest AS getpaper
