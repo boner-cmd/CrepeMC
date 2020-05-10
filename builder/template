@@ -26,7 +26,6 @@ ARG EULA_OK
 ARG RAM_ALLOC
 ENV EULA_OK ${EULA_OK:-false}
 ENV RAM_ALLOC ${RAM_ALLOC:-1}
-ENV PAPER_FILENAME="PAPER_FILENAME_"
 
 EXPOSE 25565/tcp
 EXPOSE 25565/udp
@@ -47,10 +46,10 @@ RUN export EULA_OK="$(echo ${EULA_OK} | tr '[:upper:]' '[:lower:]')" \
 VOLUME /home/paper/papermc
 
 ENTRYPOINT [ "java", "-server", \
-				"-XX:+UnlockExperimentalVMOptions", \
-				"-XX:+UseZGC", \
-				"-XX:+DisableExplicitGC", \
-				"-XX:+AlwaysPreTouch", \
-				"-XX:+ParallelRefProcEnabled", \
-			  "-jar", "/papermc/paper.jar", "nogui" ]
+	"-XX:+UnlockExperimentalVMOptions", \
+	"-XX:+UseZGC", \
+	"-XX:+DisableExplicitGC", \
+	"-XX:+AlwaysPreTouch", \
+	"-XX:+ParallelRefProcEnabled", \
+	"-jar", "/papermc/PAPER_FILENAME_", "nogui" ]
 CMD [ "-Xms1G","-Xmx1G" ]
