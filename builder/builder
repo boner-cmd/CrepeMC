@@ -35,7 +35,7 @@ curl -Lf "${PAPER_FULL_URL}" -o "${PAPER_FILENAME}" \
 readonly PAPER_SUM="$(sha256sum "${PAPER_FILENAME}" | head -c 64)"
 
 sed -i "s,PAPER_FULL_URL_,${PAPER_FULL_URL},; \
-  s,PAPER_FILENAME_,${PAPER_FILENAME},; \
+  s,PAPER_FILENAME_,${PAPER_FILENAME},g; \
   s,PAPER_VERSION_,${PAPER_VERSION},; \
   s,PAPER_SUM_,${PAPER_SUM},;" template \
   || exit 1
