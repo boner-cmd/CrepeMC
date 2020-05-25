@@ -1,0 +1,51 @@
+name: Docker Build
+on:
+  schedule:
+    - cron: '11 23 * * 6'
+  push:
+    branches:
+      - master
+#     - testing
+  pull_request:
+
+jobs:
+  prepare:
+    name: Build the builder and update the template
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: rebuild
+      - name: Build and run the builder
+        run: |
+          docker build -t bone4cmdr/crepemc:builder ./sandbox
+          docker run --name buildercon bone4cmdr/crepemc:builder
+      - name: Grab built files
+        run: |
+          docker cp buildercon:/working/template ./Dockerfile
+      - name: Commit changes to repo
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "Template updated!" -a
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: rebuild
+
+  trystable:
+    needs: prepare
+    name: Build the stable image, then tag and push to Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: rebuild
+      - uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ethco/crepemc
+          tags: jdk14,latest
+          build_args: JLINKMC_VER="latest",EULA_OK="true"

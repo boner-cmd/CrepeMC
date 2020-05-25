@@ -5,4 +5,6 @@ RUN apk update && apk add --no-cache curl
 COPY builder .
 COPY template .
 
-CMD ["./builder"]
+RUN chmod -f 754 builder
+
+CMD [ "./builder"]
