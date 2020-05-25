@@ -20,7 +20,7 @@ RUN apk update \
   && apk del --purge curl
 
 # jlinked OpenJDK environment
-FROM ethco/jlinkmc:${JLINKMC_VER}
+FROM ethco/jlinkmc:$JLINKMC_VER
 
 ARG EULA_OK
 ENV EULA_OK ${EULA_OK:-false}
