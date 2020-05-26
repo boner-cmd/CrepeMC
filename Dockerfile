@@ -1,5 +1,5 @@
 # please don't modify this file directly; it was generated using scripts
-# this specific Dockerfile was generated Mon, 25 May 2020 23:57:21 +0000
+# this specific Dockerfile was generated Tue, 26 May 2020 00:03:35 +0000
 
 # Determine which jlinked version of OpenJDK to use later
 ARG JLINKMC_VER="latest"
@@ -20,7 +20,7 @@ RUN apk update \
   && apk del --purge curl
 
 # jlinked OpenJDK environment
-FROM ethco/jlinkmc:${JLINKMC_VER}
+FROM ethco/jlinkmc:$JLINKMC_VER
 
 ARG EULA_OK
 ENV EULA_OK ${EULA_OK:-false}
