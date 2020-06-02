@@ -1,5 +1,5 @@
 # please don't modify this file directly; it was generated using scripts
-# this specific Dockerfile was generated Tue, 26 May 2020 23:15:17 +0000
+# this specific Dockerfile was generated Tue, 02 Jun 2020 23:15:14 +0000
 
 # TODO use this in second FROM without "invalid reference" error
 # ARG JLINKMC_VER="latest"
@@ -8,9 +8,9 @@
 FROM alpine:latest AS getpaper
 
 ENV PAPER_FULL_URL="https://papermc.io/api/v1/paper/1.15.2/latest/download"
-ENV PAPER_FILENAME="paper-318.jar"
-ENV PAPER_VERSION="318"
-ENV PAPER_SUM="55ec1c54708c653856a66d3e4f5a264bbc32abcefc3e0fa06dbf976836223fe3"
+ENV PAPER_FILENAME="paper-333.jar"
+ENV PAPER_VERSION="333"
+ENV PAPER_SUM="9f9aabc0c8a83dcb023295b96c94c092d5ac90fa0db0fedb893aa5585d8a455b"
 
 WORKDIR /tmp
 
@@ -25,7 +25,7 @@ FROM ethco/jlinkmc:latest
 
 ARG EULA_OK
 ENV EULA_OK ${EULA_OK:-false}
-ENV PAPER_FILENAME="paper-318.jar"
+ENV PAPER_FILENAME="paper-333.jar"
 
 EXPOSE 25565/tcp
 EXPOSE 25565/udp
@@ -51,5 +51,5 @@ ENTRYPOINT [ "java", "-server", \
 	"-XX:+DisableExplicitGC", \
 	"-XX:+AlwaysPreTouch", \
 	"-XX:+ParallelRefProcEnabled", \
-	"-jar", "/papermc/paper-318.jar", "nogui" ]
+	"-jar", "/papermc/paper-333.jar", "nogui" ]
 CMD [ "-Xms1G","-Xmx1G" ]
