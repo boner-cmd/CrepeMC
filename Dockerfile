@@ -1,7 +1,5 @@
 # please don't modify this file directly; it was generated using scripts
-# this specific Dockerfile was generated Sat, 27 Jun 2020 21:25:05 +0000
-
-# ARG JLINKMC_VER="latest"
+# this specific Dockerfile was generated Sat, 27 Jun 2020 21:26:35 +0000
 
 # Alpine base
 FROM alpine:latest AS getpaper
