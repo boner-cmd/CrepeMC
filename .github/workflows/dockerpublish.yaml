@@ -46,8 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 2
-      - run: git checkout ${{needs.prepare.outputs.outputSHA}}
+          ref: ${{needs.prepare.outputs.outputSHA}}
 #        with:
 #          ref: testing
       - name: Push the Docker builds
