@@ -45,7 +45,7 @@ jobs:
         with:
           fetch-depth: 2
       - run: |
-          echo "$UPDATE_SHA"
+          echo $UPDATE_SHA
           git checkout HEAD^
 #        with:
 #          ref: testing
