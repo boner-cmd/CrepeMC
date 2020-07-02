@@ -33,8 +33,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 #          branch: testing
-      - name: Set pushed SHA
+      - name: Store pushed SHA
         run: echo "::set-env name=UPDATE_SHA::$(git log -1 --format="%H")"
+      - name: Test environment variable
+        run: echo "$UPDATE_SHA"
 
   trystable:
     needs: prepare
@@ -49,7 +51,8 @@ jobs:
           git checkout HEAD^
 #        with:
 #          ref: testing
-      - uses: docker/build-push-action@v1
+      - name: Push the Docker builds
+        uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
