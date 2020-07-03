@@ -12,6 +12,8 @@ jobs:
   prepare:
     name: Build the builder and update the template
     runs-on: ubuntu-latest
+    outputs:
+      outputSHA: ${{ steps.getSHA.outputs.storedSHA }}
     steps:
       - uses: actions/checkout@v2
 #        with:
@@ -33,6 +35,9 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 #          branch: testing
+      - id: getSHA
+        name: Store SHA of template update
+        run: echo "::set-output name=storedSHA::$(git log -1 --format="%H")"
 
   trystable:
     needs: prepare
@@ -40,9 +45,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{needs.prepare.outputs.outputSHA}}
 #        with:
 #          ref: testing
-      - uses: docker/build-push-action@v1
+      - name: Push the Docker builds
+        uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
