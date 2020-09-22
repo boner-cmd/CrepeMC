@@ -1,13 +1,13 @@
 # please don't modify this file directly; it was generated using scripts
-# this specific Dockerfile was generated Tue, 15 Sep 2020 23:20:41 +0000
+# this specific Dockerfile was generated Tue, 22 Sep 2020 23:20:53 +0000
 
 # Alpine base
 FROM alpine:latest AS getpaper
 
 ENV PAPER_FULL_URL="https://papermc.io/api/v1/paper/1.16.3/latest/download"
-ENV PAPER_FILENAME="paper-196.jar"
-ENV PAPER_VERSION="196"
-ENV PAPER_SUM="cd7c95e2a0b8deda33bdd7ede3eb7a3bc54e99dcf28cb3ee11b1274db4d005d2"
+ENV PAPER_FILENAME="paper-204.jar"
+ENV PAPER_VERSION="204"
+ENV PAPER_SUM="66d165196d6ac610ad40b960a4d98e3bed6876e513605be586849f2f226b6359"
 
 WORKDIR /tmp
 
@@ -22,7 +22,7 @@ FROM ethco/jlinkmc:latest
 
 ARG EULA_OK
 ENV EULA_OK ${EULA_OK:-false}
-ENV PAPER_FILENAME="paper-196.jar"
+ENV PAPER_FILENAME="paper-204.jar"
 
 EXPOSE 25565/tcp
 EXPOSE 25565/udp
@@ -48,5 +48,5 @@ ENTRYPOINT [ "java", "-server", \
 	"-XX:+DisableExplicitGC", \
 	"-XX:+AlwaysPreTouch", \
 	"-XX:+ParallelRefProcEnabled", \
-	"-jar", "/papermc/paper-196.jar", "nogui" ]
+	"-jar", "/papermc/paper-204.jar", "nogui" ]
 CMD [ "-Xms1G","-Xmx1G" ]
