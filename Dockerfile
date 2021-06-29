@@ -1,5 +1,5 @@
 # please don't modify this file directly; it was generated using scripts
-# this specific Dockerfile was generated Tue, 22 Jun 2021 23:26:40 +0000
+# this specific Dockerfile was generated Tue, 29 Jun 2021 23:25:34 +0000
 
 # Alpine base
 FROM alpine:latest AS getpaper
@@ -7,7 +7,7 @@ FROM alpine:latest AS getpaper
 ENV PAPER_FULL_URL="https://papermc.io/api/v1/paper/1.17/latest/download"
 ENV PAPER_FILENAME="paper-{.jar"
 ENV PAPER_VERSION="{"
-ENV PAPER_SUM="cec5aef344c14467c26759bb46fe2fd2341c95401d0bc552e3cc90626a41d468"
+ENV PAPER_SUM="a97a0382358dcb57b065a34ea592bf3bd9a6f664df512f522ff369f049ca5503"
 
 WORKDIR /tmp
 
