@@ -33,21 +33,11 @@ fi
 cp ./template ./working/template
 cd working || exit 1
 
-# file download is slow; output not suppressed to show script did not hang
-curl -Lf "${PAPER_FULL_URL}" -o "${PAPER_FILENAME}" \
-  || exit 1
-
-readonly PAPER_SUM="$(sha256sum "${PAPER_FILENAME}" | head -c 64)"
-
-if [ "$PAPER_SHA256" != "$PAPER_SUM"]; then
-  exit 1
-fi
-
 sed -i "s,PAPER_FULL_URL_,${PAPER_FULL_URL},; \
   s,PAPER_FILENAME_,${PAPER_FILENAME},g; \
   s,PAPER_VERSION_,${PAPER_VERSION},; \
   s,JAVA_VERSION_,${JAVA_VERSION},; \
-  s,PAPER_SUM_,${PAPER_SUM},;" template \
+  s,PAPER_SHA256_,${PAPER_SHA256},;" template \
   || exit 1
 
 cat template
