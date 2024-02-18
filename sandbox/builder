@@ -5,22 +5,19 @@ if [ ! -e template ]; then
     && exit 1
 fi
 
-readonly PAPER_BASE_URL="https://papermc.io/api/v1/paper"
+readonly PAPER_BASE_URL="https://papermc.io/api/v2/projects/paper/versions"
 
-MC_VERSION="$(curl -LfsS "${PAPER_BASE_URL}")" \
-  && MC_VERSION="${MC_VERSION#*[\"}" \
-  && MC_VERSION="${MC_VERSION%%\"*}" \
-  && readonly MC_VERSION \
+PAPER_VERSION="$(curl -LfsS "${PAPER_BASE_URL}" \
+  | sed 's/.*,"//' somefile | sed 's/".*//')" \
   || exit 1
 
-PAPER_VERSION="$(curl -LfsS "${PAPER_BASE_URL}/${MC_VERSION}")" \
-  && PAPER_VERSION="${PAPER_VERSION#*latest\":\"}" \
-  && PAPER_VERSION="${PAPER_VERSION%%\"*}" \
-  && readonly PAPER_VERSION \
+PAPER_BUILD="$(curl -LfsS "${PAPER_BASE_URL}/${PAPER_VERSIONJ}/builds" \
+  |  sed 's/.*"build"://' | sed 's/,.*//'
   || exit 1
 
-readonly PAPER_FULL_URL="${PAPER_BASE_URL}/${MC_VERSION}/latest/download"
-readonly PAPER_FILENAME="paper-${PAPER_VERSION}.jar"
+readonly PAPER_FILENAME="paper-${PAPER_VERSION}-${PAPER_BUILD}.jar"
+
+readonly PAPER_FULL_URL="${PAPER_BASE_URL}/${PAPER_VERSION}/builds/${PAPER_BUILD}/downloads/${PAPER_FILENAME}"
 
 if [ ! -d working ]; then
   mkdir working
