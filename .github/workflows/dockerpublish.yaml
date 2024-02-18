@@ -1,11 +1,11 @@
 name: Docker Build
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '11 23 * * 2'
-  push:
-    branches:
-      - master
+#  schedule:
+#    - cron: '11 23 * * 2'
+#  push:
+#    branches:
+#     - master
 #     - testing
   pull_request:
 
