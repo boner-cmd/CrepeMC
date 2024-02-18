@@ -9,14 +9,17 @@ readonly PAPER_BASE_URL="https://papermc.io/api/v2/projects/paper"
 
 PAPER_VERSION="$(curl -LfsS "${PAPER_BASE_URL}" \
   && PAPER_VERSION="$(sed -e 's/.*,"//' -e 's/".*//' <<< $PAPER_VERSION)" \
+  && PAPER_VERSION="$(tr -cd 'a-zA-Z0-9.-')" \
   || exit 1
 
 PAPER_BUILD="$(curl -LfsS "${PAPER_BASE_URL}/versions/${PAPER_VERSION}" \
   && PAPER_BUILD="$(sed -e 's/.*,//' -e 's/]}//' <<< $PAPER_BUILD)" \
+  && PAPER_BUILD="$(tr -cd 'a-zA-Z0-9.-')" \
   || exit 1
 
 PAPER_SHA256="$(curl -LfsS "${PAPER_BASE_URL}/versions/${PAPER_VERSION}/builds/${PAPER_BUILD}" \
-  && readonly PAPER_SHA256="$(sed -e 's/"},"mojang-mappings.*//' -e 's/.*sha256":"//')" \
+  && PAPER_SHA256="$(sed -e 's/"},"mojang-mappings.*//' -e 's/.*sha256":"//')" \
+  && PAPER_SHA256="$(tr -cd 'a-zA-Z0-9.-')" \
   || exit 1
 
 readonly PAPER_FILENAME="paper-${PAPER_VERSION}-${PAPER_BUILD}.jar"
