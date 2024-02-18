@@ -5,15 +5,15 @@ if [ ! -e template ]; then
     && exit 1
 fi
 
-readonly PAPER_BASE_URL="https://papermc.io/api/v2/projects/paper/versions"
+readonly PAPER_BASE_URL="https://papermc.io/api/v2/projects/paper"
 
 PAPER_VERSION="$(curl -LfsS "${PAPER_BASE_URL}" \
   | sed 's/.*,"//' | sed 's/".*//')"
 
-PAPER_BUILD="$(curl -LfsS "${PAPER_BASE_URL}/${PAPER_VERSION}/builds" \
+PAPER_BUILD="$(curl -LfsS "${PAPER_BASE_URL}/versions/${PAPER_VERSION}" \
   |  sed 's/.*"build"://' | sed 's/,.*//')"
 
-PAPER_SHA256="$(curl -LfsS "${PAPER_BASE_URL}/${PAPER_VERSION}/builds/${PAPER_BUILD}" \
+PAPER_SHA256="$(curl -LfsS "${PAPER_BASE_URL}/versions/${PAPER_VERSION}/builds/${PAPER_BUILD}" \
   | sed 's/"},"mojang-mappings.*//' | sed 's/.*sha256":"//')"
 
 readonly PAPER_FILENAME="paper-${PAPER_VERSION}-${PAPER_BUILD}.jar"
