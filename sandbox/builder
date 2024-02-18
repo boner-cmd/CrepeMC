@@ -11,7 +11,7 @@ PAPER_VERSION="$(curl -LfsS "${PAPER_BASE_URL}" \
   | sed 's/.*,"//' | sed 's/".*//')"
 
 PAPER_BUILD="$(curl -LfsS "${PAPER_BASE_URL}/versions/${PAPER_VERSION}" \
-  |  sed 's/.*"build"://' | sed 's/,.*//')"
+  |  sed 's/.*,//' | sed 's/]}//')"
 
 PAPER_SHA256="$(curl -LfsS "${PAPER_BASE_URL}/versions/${PAPER_VERSION}/builds/${PAPER_BUILD}" \
   | sed 's/"},"mojang-mappings.*//' | sed 's/.*sha256":"//')"
