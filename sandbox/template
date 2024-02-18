@@ -18,7 +18,32 @@ RUN apk update \
   && apk del --purge curl
 
 # jlinked OpenJDK environment
-FROM ethco/jlinkmc:latest
+# https://github.com/docker-library/docs/blob/master/eclipse-temurin/README.md#supported-tags-and-respective-dockerfile-links
+
+# need to find-and-replace the version into the template
+FROM eclipse-temurin:JAVA_VERSION_-alpine AS jlink
+
+# Create a custom Java runtime
+RUN $JAVA_HOME/bin/jlink \
+         --add-modules java.base,java.compiler,java.desktop,java.logging,java.management,java.naming,java.rmi,java.scripting,java.sql,java.xml,jdk.sctp,jdk.unsupported,java.instrument \
+         --strip-debug \
+         --no-man-pages \
+         --no-header-files \
+         --compress=2 \
+         --output /javaruntime
+
+# in my version, I needed to pass the arguments as an array to RUN, specify the module path, and include --bind-services, is this still needed?
+
+#RUN ["/opt/java/openjdk/bin/jlink", "--compress=2", "--bind-services", \
+#  "--strip-debug", "--module-path", "/opt/java/openjdk/jmods", \
+#  "--add-modules", \
+#	"java.base,java.compiler,java.desktop,java.logging,java.management,java.naming,java.rmi,java.scripting,java.sql,java.xml,jdk.sctp,jdk.unsupported,java.instrument", \
+#  "--no-header-files", "--no-man-pages", "--output", "/jlinked"]
+
+FROM alpine:latest
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH "${JAVA_HOME}/bin:${PATH}"
+COPY --from=jlink /javaruntime $JAVA_HOME
 
 ARG EULA_OK
 ENV EULA_OK ${EULA_OK:-false}
