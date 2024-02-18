@@ -16,11 +16,13 @@ PAPER_BUILD="$(curl -LfsS "${PAPER_BASE_URL}/versions/${PAPER_VERSION}" \
   || exit 1
 
 PAPER_SHA256="$(curl -LfsS "${PAPER_BASE_URL}/versions/${PAPER_VERSION}/builds/${PAPER_BUILD}" \
-  && PAPER_SHA256="$(sed -e 's/"},"mojang-mappings.*//' -e 's/.*sha256":"//')" \
+  && readonly PAPER_SHA256="$(sed -e 's/"},"mojang-mappings.*//' -e 's/.*sha256":"//')" \
   || exit 1
 
 readonly PAPER_FILENAME="paper-${PAPER_VERSION}-${PAPER_BUILD}.jar"
 readonly PAPER_FULL_URL="${PAPER_BASE_URL}/${PAPER_VERSION}/builds/${PAPER_BUILD}/downloads/${PAPER_FILENAME}"
+
+JAVA_VERSION="$(https://api.adoptium.net/v3/info/available_releases
 
 if [ ! -d working ]; then
   mkdir working
@@ -41,6 +43,7 @@ fi
 sed -i "s,PAPER_FULL_URL_,${PAPER_FULL_URL},; \
   s,PAPER_FILENAME_,${PAPER_FILENAME},g; \
   s,PAPER_VERSION_,${PAPER_VERSION},; \
+  s,JAVA_VERSION_,${JAVA_VERSION},; \
   s,PAPER_SUM_,${PAPER_SUM},;" template \
   || exit 1
 
