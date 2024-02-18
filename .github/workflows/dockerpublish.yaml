@@ -1,5 +1,8 @@
 name: Docker Build
 on:
+  workflow_dispatch:
+    branches:
+      - master
   schedule:
     - cron: '11 23 * * 2'
   push:
