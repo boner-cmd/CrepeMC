@@ -44,10 +44,5 @@ sed -i "s,PAPER_FULL_URL_,${PAPER_FULL_URL},; \
   s,PAPER_SUM_,${PAPER_SUM},;" template \
   || exit 1
 
-# stamp the generation date last
-readonly READY_DATE="$(date -R)"
-sed -i "s/DATE_/${READY_DATE}/" template \
-  || exit 1
-
 cat template
 exit 0
