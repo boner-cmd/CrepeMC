@@ -8,15 +8,15 @@ fi
 readonly PAPER_BASE_URL="https://papermc.io/api/v2/projects/paper/versions"
 
 PAPER_VERSION="$(curl -LfsS "${PAPER_BASE_URL}" \
-  | sed 's/.*,"//' somefile | sed 's/".*//')" \
-  || exit 1
+  | sed 's/.*,"//' | sed 's/".*//')"
 
-PAPER_BUILD="$(curl -LfsS "${PAPER_BASE_URL}/${PAPER_VERSIONJ}/builds" \
-  |  sed 's/.*"build"://' | sed 's/,.*//'
-  || exit 1
+PAPER_BUILD="$(curl -LfsS "${PAPER_BASE_URL}/${PAPER_VERSION}/builds" \
+  |  sed 's/.*"build"://' | sed 's/,.*//')"
+
+PAPER_SHA256="$(curl -LfsS "${PAPER_BASE_URL}/${PAPER_VERSION}/builds/${PAPER_BUILD}" \
+  | sed 's/"},"mojang-mappings.*//' | sed 's/.*sha256":"//')"
 
 readonly PAPER_FILENAME="paper-${PAPER_VERSION}-${PAPER_BUILD}.jar"
-
 readonly PAPER_FULL_URL="${PAPER_BASE_URL}/${PAPER_VERSION}/builds/${PAPER_BUILD}/downloads/${PAPER_FILENAME}"
 
 if [ ! -d working ]; then
@@ -30,6 +30,10 @@ curl -Lf "${PAPER_FULL_URL}" -o "${PAPER_FILENAME}" \
   || exit 1
 
 readonly PAPER_SUM="$(sha256sum "${PAPER_FILENAME}" | head -c 64)"
+
+if [ "$PAPER_SHA256" != "$PAPER_SUM"]; then
+  exit 1
+fi
 
 sed -i "s,PAPER_FULL_URL_,${PAPER_FULL_URL},; \
   s,PAPER_FILENAME_,${PAPER_FILENAME},g; \
