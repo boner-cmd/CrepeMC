@@ -3,7 +3,7 @@
 # Alpine base
 FROM alpine:latest AS getpaper
 
-ENV PAPER_FULL_URL="PAPER_FULL_URL_"
+ENV PAPER_DOWNLOAD_URL="PAPER_DOWNLOAD_URL_"
 ENV PAPER_FILENAME="PAPER_FILENAME_"
 ENV PAPER_VERSION="PAPER_VERSION_"
 ENV PAPER_SHA256="PAPER_SHA256_"
@@ -12,7 +12,7 @@ WORKDIR /tmp
 
 RUN apk update \
   && apk add --no-cache curl \
-  && curl -Lf "${PAPER_FULL_URL}" -o "${PAPER_FILENAME}" \
+  && curl -Lf "${PAPER_DOWNLOAD_URL}" -o "${PAPER_FILENAME}" \
   && echo "${PAPER_SHA256}  ${PAPER_FILENAME}" | sha256sum -c - \
   && apk del --purge curl
 
