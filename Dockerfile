@@ -22,7 +22,7 @@ RUN apk update \
 # https://github.com/docker-library/docs/blob/master/eclipse-temurin/README.md#supported-tags-and-respective-dockerfile-links
 
 # need to find-and-replace the version into the template
-FROM eclipse-temurin:availableltsreleases21availablereleases21tipversion23-alpine AS jlink
+FROM eclipse-temurin:21-alpine AS jlink
 
 # Create a custom Java runtime
 RUN $JAVA_HOME/bin/jlink \
