@@ -8,7 +8,7 @@ fi
 readonly PAPER_API_URL="https://papermc.io/api/v2/projects/paper"
 readonly ADOPTIUM_API_URL="https://api.adoptium.net/v3/info/available_releases"
 
-PAPER_VERSION="$(curl -LfsS "${PAPER_API_URL}" \
+PAPER_VERSION="$(curl -LfsS "${PAPER_API_URL})" \
   && PAPER_VERSION="$(sed -e 's/.*,"//' -e 's/".*//' <<< $PAPER_VERSION)" \
   && PAPER_VERSION="$(tr -cd 'a-zA-Z0-9.-')" \
   || exit 1
