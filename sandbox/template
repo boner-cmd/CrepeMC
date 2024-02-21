@@ -16,12 +16,9 @@ RUN apk update \
   && echo "${PAPER_SHA256}  ${PAPER_FILENAME}" | sha256sum -c - \
   && apk del --purge curl
 
-# need to brick the dockerfile if the sha256 check fails
-
 # jlinked OpenJDK environment
 # https://github.com/docker-library/docs/blob/master/eclipse-temurin/README.md#supported-tags-and-respective-dockerfile-links
 
-# need to find-and-replace the version into the template
 FROM eclipse-temurin:JAVA_VERSION_-alpine AS jlink
 
 # Create a custom Java runtime
