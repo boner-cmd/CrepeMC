@@ -30,7 +30,10 @@ readonly PAPER_DOWNLOAD_URL="${PAPER_API_URL}/${PAPER_VERSION}/builds/${PAPER_BU
 # extra tests required before it's safe to grab newest
 # grabbing the newest release might break Paper compatibility
 
+# Adoptium embeds whitespace and newlines in its API output, Paper does not
+
 JAVA_VERSION="$(curl -LfsS "$ADOPTIUM_API_URL")" \
+  && JAVA_VERSION="$(echo "$JAVA_VERSION" | tr -d [:space:])" \
   && JAVA_VERSION="$(echo "$JAVA_VERSION" | sed -e 's/].*//' -e 's/.*,//')" \
   && JAVA_VERSION="$(echo "$JAVA_VERSION" | tr -cd 'a-zA-Z0-9.-')" \
   || exit 1
